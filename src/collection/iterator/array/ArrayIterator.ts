@@ -10,7 +10,7 @@ export class ArrayIterator<T> implements Iterator<T> {
         return this.current < this.elements.length;
     }
 
-    getNext():T {
+    next():T {
         return this.elements[this.current++];
     }
 
