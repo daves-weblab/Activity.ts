@@ -15,7 +15,7 @@ let namespaces:Object = {
     }
 };
 
-export module UUID {
+export namespace UUID {
     export function createNamespace(namespace:string) {
         if (namespaces[namespace]) return;
 

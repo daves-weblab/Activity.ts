@@ -9,14 +9,18 @@ import {ArrayList} from "../../collection/list/ArrayList";
 UUID.createNamespace(Activity.UUID_NAMESPACE);
 
 export class Activity extends LifecycleAdapter {
-    public static get UUID_NAMESPACE():string { return 'activity'}
+    public static get UUID_NAMESPACE():string {
+        return 'activity'
+    }
 
     private id:number;
+    private parent:Activity;
+    // TODO implement and switch to HashMap
     private children:List<Activity>;
 
     constructor(context:Context) {
         super();
-        
+
         this.id = UUID.getId(Activity.UUID_NAMESPACE);
         this.children = new ArrayList<Activity>();
     }
@@ -29,18 +33,34 @@ export class Activity extends LifecycleAdapter {
         // TODO
     }
 
+    hasParent():boolean {
+        return this.parent != null;
+    }
+
+    getParent():Activity {
+        return this.parent;
+    }
+
+    setParent(parent:Activity) {
+        this.parent = parent;
+    }
+
     addChild(child:Activity) {
-        
+        if(child.hasParent()) {
+            child.getParent().removeChild(child);
+        }
+
+        this.children.add(child);
     }
 
     getChild(key:number) {
-
+        // TODO
     }
 
     removeChild(child:number | Activity) {
         let id;
 
-        if(child instanceof Activity) {
+        if (child instanceof Activity) {
             id = child.getId();
         } else {
             id = child;
@@ -50,7 +70,7 @@ export class Activity extends LifecycleAdapter {
     }
 
     removeChildById(id:number) {
-
+        // TODO
     }
 
     start() {

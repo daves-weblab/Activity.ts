@@ -1,4 +1,4 @@
-export module ArrayHelper {
+export namespace ArrayHelper {
     export function add<T>(elements:Array<T>, element:T) {
         elements.push(element);
     }

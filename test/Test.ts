@@ -1,13 +1,13 @@
 import {ArrayList} from "../src/collection/list/ArrayList";
-import {Iterator} from "../src/collection/iterator/Iterator";
 
 let arrayList:ArrayList<number> = new ArrayList<number>();
 
 arrayList.add(1);
+arrayList.add(3);
 arrayList.add(2);
 
-let iterator:Iterator<number> = arrayList.iterator();
+arrayList.remove(3);
 
-while(iterator.hasNext()) {
-    console.log(iterator.next());
-}  
+arrayList.forEach((element:number) => {
+    console.log(element);
+});
