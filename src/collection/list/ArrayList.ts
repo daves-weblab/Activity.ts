@@ -21,7 +21,7 @@ export class ArrayList<T> implements List<T> {
         this.elements = ArrayHelper.removeByIndex(this.elements, index);
     }
 
-    find(predicate:(element:T) => boolean) : T | null {
+    find(predicate:(element:T) => boolean) : T {
         let iterator:Iterator<T> = this.iterator();
         let element;
 

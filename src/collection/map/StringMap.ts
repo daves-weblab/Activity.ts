@@ -1,5 +1,8 @@
 import {Map} from "./Map";
 import {MapIterator} from "../iterator/map/MapIterator";
+import {Entry} from "./Entry";
+import {List} from "../list/List";
+import {ObjectHelper} from "../../util/object/ObjectHelper";
 
 export class StringMap<T> extends Map<string, T> {
     private elements:Object;
@@ -13,7 +16,7 @@ export class StringMap<T> extends Map<string, T> {
     }
 
     get(key:string):T {
-        if(this.has(key)) {
+        if (this.has(key)) {
             return this.elements[key];
         }
 
@@ -24,10 +27,14 @@ export class StringMap<T> extends Map<string, T> {
         // null is a valid value!
         return this.elements[key] !== undefined;
     }
-    
-    iterator() {
-        
 
-        return new MapIterator(this.elements);
+    iterator():MapIterator<string, T> {
+        let elements:List<Entry<string, T>> = new List<>();
+
+        ObjectHelper.forEach(this.elements, (key:string, value:T) => {
+            elements.add(new Entry<string, T>(key, value));
+        });
+
+        return new MapIterator(elements);
     }
 }

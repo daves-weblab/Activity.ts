@@ -5,5 +5,5 @@ export interface List<T> extends Collection<T> {
 
     add(element:T);
 
-    remove(element:T, all:boolean = false);
+    remove(element:T, all:boolean);
 }
