@@ -16,35 +16,35 @@ export class ArrayList<T> implements List<T> {
     }
 
     removeByIndex(index:number) {
-        if(index >= this.elements.length) throw new IndexOutOfBoundsException();
-        
+        if (index >= this.elements.length) throw new IndexOutOfBoundsException();
+
         this.elements = ArrayHelper.removeByIndex(this.elements, index);
     }
 
-    find(predicate:(element:T) => boolean) : T {
+    find(predicate:(element:T) => boolean):T {
         let iterator:Iterator<T> = this.iterator();
         let element;
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             element = iterator.next();
 
-            if(predicate(element)) {
+            if (predicate(element)) {
                 return element;
             }
         }
 
         return null;
     }
-    
-    where(predicate:(element:T) => boolean) : List<T> {
+
+    where(predicate:(element:T) => boolean):List<T> {
         let elements = new ArrayList<T>();
         let iterator:Iterator<T> = this.iterator();
         let element;
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             element = iterator.next();
 
-            if(predicate(element)) {
+            if (predicate(element)) {
                 elements.add(element);
             }
         }
@@ -54,5 +54,21 @@ export class ArrayList<T> implements List<T> {
 
     iterator():Iterator<T> {
         return new ArrayIterator<T>(this.elements);
+    }
+
+    forEach(iteration:(element:T) => any) {
+        let iterator:Iterator<T> = this.iterator();
+
+        while (iterator.hasNext()) {
+            if (iteration(iterator.next()) === false) {
+                break;
+            }
+        }
+    }
+
+    map(operator:(element:T) => void) {
+        this.forEach((element:T) => {
+            operator(element);
+        });
     }
 }

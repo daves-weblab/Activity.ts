@@ -15,6 +15,8 @@ export class Activity extends LifecycleAdapter {
     private children:List<Activity>;
 
     constructor(context:Context) {
+        super();
+        
         this.id = UUID.getId(Activity.UUID_NAMESPACE);
         this.children = new ArrayList<Activity>();
     }

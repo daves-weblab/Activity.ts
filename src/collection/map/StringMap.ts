@@ -3,8 +3,9 @@ import {MapIterator} from "../iterator/map/MapIterator";
 import {Entry} from "./Entry";
 import {List} from "../list/List";
 import {ObjectHelper} from "../../util/object/ObjectHelper";
+import {ArrayList} from "../list/ArrayList";
 
-export class StringMap<T> extends Map<string, T> {
+export class StringMap<T> implements Map<string, T> {
     private elements:Object;
 
     constructor() {
@@ -29,7 +30,7 @@ export class StringMap<T> extends Map<string, T> {
     }
 
     iterator():MapIterator<string, T> {
-        let elements:List<Entry<string, T>> = new List<>();
+        let elements:List<Entry<string, T>> = new ArrayList<Entry<string, T>>();
 
         ObjectHelper.forEach(this.elements, (key:string, value:T) => {
             elements.add(new Entry<string, T>(key, value));

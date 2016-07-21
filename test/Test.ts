@@ -3,7 +3,7 @@ import {Iterator} from "../src/collection/iterator/Iterator";
 
 let arrayList:ArrayList<number> = new ArrayList<number>();
 
-arrayList.add(1);  
+arrayList.add(1);
 arrayList.add(2);
 
 let iterator:Iterator<number> = arrayList.iterator();

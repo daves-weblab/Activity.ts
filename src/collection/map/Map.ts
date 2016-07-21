@@ -9,5 +9,9 @@ export interface Map<K, V> {
 
     iterator():MapIterator<K, V>;
 
-    find(element:V);
+    // TODO findKey(element:V):K;
+    // TODO keySet():List<K>;
+    // TODO valueSet():List<V>;
+
+    // TODO forEach();
 }
