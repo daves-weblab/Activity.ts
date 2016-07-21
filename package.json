@@ -1,0 +1,23 @@
+{
+  "name": "activity.ts",
+  "description": "Java like utilities and Android like activity system.",
+  "version": "0.0.1",
+  "private": false,
+  "keywords": [
+    "typescript",
+    "utility",
+    "activity"
+  ],
+  "repository": "https://github.com/daves-weblab/Activity.ts",
+  "author": "David Riedl",
+  "homepage": "http://daves-weblab.com",
+  "contributors": [
+    "David Riedl <daves.weblab@gmail.com> (https://github.com/daves-weblab)"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "*",
+    "gulp-typescript": "*",
+    "gulp-sourcemaps": "*"
+  }
+}
