@@ -12,7 +12,7 @@ export class ArrayList<T> implements List<T> {
     }
 
     remove(element:T, all:boolean = false) {
-        this.elements = ArrayHelper.remove(this.elements, element, all);
+        ArrayHelper.remove(this.elements, element, all);
     }
 
     removeByIndex(index:number) {
@@ -47,7 +47,7 @@ export class ArrayList<T> implements List<T> {
             if (predicate(element)) {
                 elements.add(element);
             }
-        }
+        } 
 
         return elements;
     }
