@@ -1,4 +1,5 @@
 import {Iterator} from "../Iterator";
+import {ArrayHelper} from "../../../util/array/ArrayHelper";
 
 export class ArrayIterator<T> implements Iterator<T> {
     private current:number = 0;
@@ -15,10 +16,6 @@ export class ArrayIterator<T> implements Iterator<T> {
     }
 
     remove() {
-        if(this.current == 0) throw new Error("Cannot remove element on index -1");
-
-        this.current--;
-
-        this.elements = this.elements.splice(this.current, 1);
+        ArrayHelper.removeByIndex(this.elements, --this.current);
     }
 }

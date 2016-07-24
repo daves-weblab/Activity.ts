@@ -1,4 +1,6 @@
 import {MapIterator} from "../iterator/map/MapIterator";
+import {Entry} from "./Entry";
+import {List} from "../list/List";
 
 export interface Map<K, V> {
     put(key:K, value:V);
@@ -7,11 +9,17 @@ export interface Map<K, V> {
 
     has(key:K);
 
+    remove(key:K);
+
     iterator():MapIterator<K, V>;
 
-    // TODO findKey(element:V):K;
-    // TODO keySet():List<K>;
-    // TODO valueSet():List<V>;
+    findKey(elements:V):K;
 
-    // TODO forEach();
+    keySet():List<K>;
+
+    valueSet():List<V>;
+
+    forEach(iteration:(entry:Entry<K, V>) => void);
+
+    size():number;
 }

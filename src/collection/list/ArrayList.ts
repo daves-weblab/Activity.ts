@@ -11,6 +11,12 @@ export class ArrayList<T> implements List<T> {
         ArrayHelper.add(this.elements, element);
     }
 
+    get(index:number):T {
+        if(index < 0 || this.size() <= index) throw new IndexOutOfBoundsException();
+
+        return this.elements[index];
+    }
+
     remove(element:T, all:boolean = false) {
         ArrayHelper.remove(this.elements, element, all);
     }
@@ -19,6 +25,10 @@ export class ArrayList<T> implements List<T> {
         if (index >= this.elements.length) throw new IndexOutOfBoundsException();
 
         this.elements = ArrayHelper.removeByIndex(this.elements, index);
+    }
+
+    size():number {
+        return this.elements.length;
     }
 
     find(predicate:(element:T) => boolean):T {

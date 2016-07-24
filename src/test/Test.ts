@@ -1,19 +1,11 @@
-import {ArrayList} from "../collection/list/ArrayList";
+import {md5} from "../util/hash/md5";
 
-let arrayList:ArrayList<number> = new ArrayList<number>();
+console.log(md5(1));
+console.log(md5(1));
 
-arrayList.add(1);
-arrayList.add(3);
-arrayList.add(2);
-
-arrayList.forEach((element:number) => {
-   console.log(element);
-});
-
-arrayList.remove(3);
-
-console.log('3 removed');
-
-arrayList.forEach((element:number) => {
-    console.log(element);
-});
+let object:Object = {
+    foo: 'foo',
+    bar: 'bar'
+};
+console.log(object);
+console.log(object);
