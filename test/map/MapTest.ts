@@ -1,9 +1,8 @@
-import {Iterator} from "../../src/collection/iterator/Iterator";
-import {Entry} from "../../src/collection/map/Entry";
+import * as tsUnit from "../tsUnit/tsUnit";
 import {HashMap} from "../../src/collection/map/HashMap";
 import {Hashable} from "../../src/collection/map/Hashable";
 
-class Test implements Hashable {
+class HashableObject implements Hashable {
     constructor(private key:any) {
     }
 
@@ -16,55 +15,23 @@ class Test implements Hashable {
     }
 }
 
-let map:HashMap<Test, number> = new HashMap<Test, number>();
+export class HashMapTest extends tsUnit.TestClass {
+    private HASHABLE1 = new HashableObject("I am a Key");
+    private HASHABLE2 = new HashableObject(2);
 
-let key1 = new Test('ahm');
-let key2 = new Test(1);
+    private map:HashMap<HashableObject, number> = new HashMap<HashableObject, number>();
 
-map.put(key1, 1);
-map.put(key2, 2);
+    setup() {
+        this.map.put(this.HASHABLE1, 1);
+        this.map.put(this.HASHABLE2, 2);
+    }
 
-console.log(map.has(key1));
-console.log(map.has(key2));
-console.log(map.has(new Test('foo')));
+    testSize() {
+        this.areIdentical(2, this.map.size(), 'size is wrong!');
+    }
 
-console.log(map.get(key1));
-console.log(map.get(key2));
-console.log(map.get(new Test('foo')));
-
-console.log('---- keys ----');
-
-map.keySet().forEach((key:any) => {
-   console.log(key);
-});
-
-console.log('---- iterator ----');
-
-let iterator:Iterator<Entry<any, number>> = map.iterator();
-
-while(iterator.hasNext()) {
-    let entry:Entry<any, number> = iterator.next();
-
-    console.log(entry.getKey() + ', ' + entry.getValue());
-
-    if(entry.getValue() == 1) {
-        console.log('1 found, removing key ' + entry.getKey() + ' ...');
-        iterator.remove();
+    testGet() {
+        this.areIdentical(this.map.get(this.HASHABLE1), 1);
+        this.areIdentical(this.map.get(this.HASHABLE2), 2);
     }
 }
-
-console.log('---- keys ----');
-
-map.keySet().forEach((key:any) => {
-    console.log(key);
-});
-
-console.log('---- removing key 1 ----');
-
-map.remove(key2);
-
-console.log('---- keys ----');
-
-map.keySet().forEach((key:any) => {
-    console.log(key);
-});
