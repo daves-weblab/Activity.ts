@@ -4,6 +4,7 @@ import {Entry} from "./Entry";
 import {List} from "../list/List";
 import {ObjectHelper} from "../../util/object/ObjectHelper";
 import {ArrayList} from "../list/ArrayList";
+import {Iterator} from "../iterator/Iterator";
 
 export class StringMap<T> implements Map<string, T> {
     private elements:Object = {};
@@ -13,7 +14,7 @@ export class StringMap<T> implements Map<string, T> {
     }
 
     put(key:string, value:T) {
-        if(!this.has(key)) this.length++;
+        if (!this.has(key)) this.length++;
 
         this.elements[key] = value;
     }
@@ -32,7 +33,7 @@ export class StringMap<T> implements Map<string, T> {
     }
 
     remove(key:string) {
-        if(this.has(key)) {
+        if (this.has(key)) {
             this.length--;
             delete this.elements[key];
         }
@@ -42,12 +43,14 @@ export class StringMap<T> implements Map<string, T> {
         return this.length;
     }
 
-    iterator():MapIterator<string, T> {
+    iterator():Iterator<Entry<string, T>> {
         return new MapIterator(this);
     }
 
-    findKey(elements:T):string {
-        return undefined;
+    findKey(element:T):string {
+        return this.keySet().find((key:string) => {
+            return this.get(key) == element
+        });
     }
 
     keySet():List<string> {
@@ -72,7 +75,7 @@ export class StringMap<T> implements Map<string, T> {
 
     forEach(iteration:(entry:Entry<string, T>)=>void) {
         ObjectHelper.forEach(this.elements, (key:string, value:T) => {
-            iteration(new Entry<K, V>(key, value));
+            iteration(new Entry<string, T>(key, value));
         });
     }
 }

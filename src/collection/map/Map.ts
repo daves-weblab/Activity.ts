@@ -1,6 +1,6 @@
-import {MapIterator} from "../iterator/map/MapIterator";
 import {Entry} from "./Entry";
 import {List} from "../list/List";
+import {Iterator} from "../iterator/Iterator";
 
 export interface Map<K, V> {
     put(key:K, value:V);
@@ -11,9 +11,9 @@ export interface Map<K, V> {
 
     remove(key:K);
 
-    iterator():MapIterator<K, V>;
+    iterator():Iterator<Entry<K, V>>;
 
-    findKey(elements:V):K;
+    findKey(element:V):K;
 
     keySet():List<K>;
 
