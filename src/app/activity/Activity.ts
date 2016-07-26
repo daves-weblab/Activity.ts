@@ -1,24 +1,24 @@
 import {UUID} from "../../util/uuid/UUID";
 import {LifecycleAdapter} from "../lifecycle/LifecycleAdapter";
-import {Context} from "../content/Context";
 import {StringMap} from "../../collection/map/StringMap";
 import {ActivityState} from "./ActivityState";
 
 export class Activity extends LifecycleAdapter {
     public static get UUID_NAMESPACE():string {
-        return 'activity'
+        return 'activity';
     }
 
     private id:number = null;
     private state:ActivityState;
-    private destroyed:boolean = false;
     private parent:Activity = null;
     private children:StringMap<Activity>;
 
     constructor(create:boolean = true) {
         super();
 
-        this.create();
+        if (create) {
+            this.create();
+        }
     }
 
     getId() {
@@ -41,16 +41,22 @@ export class Activity extends LifecycleAdapter {
         this.parent = parent;
     }
 
+    removeParent() {
+        this.parent = null;
+    }
+
     addChild(child:Activity) {
-        if(child.hasParent()) {
+        if (child.hasParent()) {
             child.getParent().removeChild(child);
         }
+
+        child.setParent(this);
 
         this.children.put(child.getId(), child);
     }
 
     getChild(id:number) {
-        return this.children.get(key);
+        return this.children.get(id);
     }
 
     removeChild(child:number | Activity) {
@@ -66,7 +72,12 @@ export class Activity extends LifecycleAdapter {
     }
 
     removeChildById(id:number) {
-        this.children.remove(id);
+        let child = this.children.get(id);
+
+        if(child) {
+            child.removeParent();
+            this.children.remove(id);
+        }
     }
 
     isRunning() {
@@ -74,7 +85,7 @@ export class Activity extends LifecycleAdapter {
     }
 
     isDestroyed() {
-        return this.destroyed;
+        return this.state == ActivityState.DESTROYED;
     }
 
     getState():ActivityState {
@@ -130,13 +141,12 @@ export class Activity extends LifecycleAdapter {
         this.onDestroy();
 
         // cleanup logic is complete
-        // unset the activities' id
+        // unset the activities id
         UUID.unsetId(this.id, Activity.UUID_NAMESPACE);
         this.id = null;
-        this.destroyed = true;
     }
 }
 
 // register namespace for activities, every activity receives
-// a internal id
+// an internal id
 UUID.createNamespace(Activity.UUID_NAMESPACE);
