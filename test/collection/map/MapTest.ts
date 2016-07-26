@@ -1,8 +1,8 @@
-import * as tsUnit from "../tsUnit/tsUnit";
-import {HashMap} from "../../src/collection/map/HashMap";
-import {Hashable} from "../../src/collection/map/Hashable";
-import {Entry} from "../../src/collection/map/Entry";
-import {Iterator} from "../../src/collection/iterator/Iterator";
+import * as tsUnit from "../../tsUnit/tsUnit";
+import {HashMap} from "../../../src/collection/map/HashMap";
+import {Hashable} from "../../../src/collection/map/Hashable";
+import {Entry} from "../../../src/collection/map/Entry";
+import {Iterator} from "../../../src/collection/iterator/Iterator";
 
 class HashableObject implements Hashable {
     constructor(private key:any) {

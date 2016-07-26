@@ -3,6 +3,7 @@ import {ArrayIterator} from "../iterator/array/ArrayIterator";
 import {IndexOutOfBoundsException} from "../../exceptions/IndexOutOfBoundsException";
 import {ArrayHelper} from "../../util/array/ArrayHelper";
 import {List} from "./List";
+import {Collection} from "../Collection";
 
 export class ArrayList<T> implements List<T> {
     private elements:Array<T> = [];
@@ -76,9 +77,13 @@ export class ArrayList<T> implements List<T> {
         }
     }
 
-    map(operator:(element:T) => void) {
+    map(operator:(element:T) => T):Collection<T> {
+        let list:List<T> = new ArrayList<T>();
+        
         this.forEach((element:T) => {
-            operator(element);
+            list.add(operator(element));
         });
+        
+        return list;
     }
 }

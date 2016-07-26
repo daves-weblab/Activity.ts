@@ -1,28 +1,24 @@
 import {UUID} from "../../util/uuid/UUID";
 import {LifecycleAdapter} from "../lifecycle/LifecycleAdapter";
 import {Context} from "../content/Context";
-import {List} from "../../collection/list/List";
-import {ArrayList} from "../../collection/list/ArrayList";
-
-// register namespace for activities, every activity receives
-// a internal id
-UUID.createNamespace(Activity.UUID_NAMESPACE);
+import {StringMap} from "../../collection/map/StringMap";
+import {ActivityState} from "./ActivityState";
 
 export class Activity extends LifecycleAdapter {
     public static get UUID_NAMESPACE():string {
         return 'activity'
     }
 
-    private id:number;
-    private parent:Activity;
-    // TODO implement and switch to HashMap
-    private children:List<Activity>;
+    private id:number = null;
+    private state:ActivityState;
+    private destroyed:boolean = false;
+    private parent:Activity = null;
+    private children:StringMap<Activity>;
 
-    constructor(context:Context) {
+    constructor(create:boolean = true) {
         super();
 
-        this.id = UUID.getId(Activity.UUID_NAMESPACE);
-        this.children = new ArrayList<Activity>();
+        this.create();
     }
 
     getId() {
@@ -50,11 +46,11 @@ export class Activity extends LifecycleAdapter {
             child.getParent().removeChild(child);
         }
 
-        this.children.add(child);
+        this.children.put(child.getId(), child);
     }
 
-    getChild(key:number) {
-        // TODO
+    getChild(id:number) {
+        return this.children.get(key);
     }
 
     removeChild(child:number | Activity) {
@@ -70,35 +66,77 @@ export class Activity extends LifecycleAdapter {
     }
 
     removeChildById(id:number) {
-        // TODO
+        this.children.remove(id);
+    }
+
+    isRunning() {
+        return this.state == ActivityState.STARTED || this.state == ActivityState.RESUMED;
+    }
+
+    isDestroyed() {
+        return this.destroyed;
+    }
+
+    getState():ActivityState {
+        return this.state;
+    }
+
+    create() {
+        this.id = UUID.getId(Activity.UUID_NAMESPACE);
+        this.children = new StringMap<Activity>();
+
+        this.state = ActivityState.CREATED;
+
+        this.onCreate();
     }
 
     start() {
         // TODO
+
+        this.state = ActivityState.STARTED;
+
         this.onStart();
     }
 
     pause() {
         // TODO
+
+        this.state = ActivityState.PAUSED;
+
         this.onPause();
     }
 
     resume() {
         // TODO
+
+        this.state = ActivityState.RESUMED;
+
         this.onResume();
     }
 
     stop() {
         // TODO
+
+        this.state = ActivityState.STOPPED;
+
         this.onStop();
     }
 
     destroy() {
         // TODO
+
+        this.state = ActivityState.DESTROYED;
+
         this.onDestroy();
 
         // cleanup logic is complete
         // unset the activities' id
         UUID.unsetId(this.id, Activity.UUID_NAMESPACE);
+        this.id = null;
+        this.destroyed = true;
     }
 }
+
+// register namespace for activities, every activity receives
+// a internal id
+UUID.createNamespace(Activity.UUID_NAMESPACE);

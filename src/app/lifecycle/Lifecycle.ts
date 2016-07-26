@@ -1,4 +1,6 @@
 export interface Lifecycle {
+    create();
+
     start();
 
     pause();
@@ -8,6 +10,8 @@ export interface Lifecycle {
     stop();
 
     destroy();
+
+    onCreate();
 
     onStart();
     

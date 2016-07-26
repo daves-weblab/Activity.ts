@@ -8,7 +8,7 @@ export interface Collection<T> extends Iterable<T> {
 
     forEach(iteration:(element:T) => any);
 
-    map(operator:(element:T) => void);
+    map(operator:(element:T) => T):Collection<T>;
 
     size():number;
 }

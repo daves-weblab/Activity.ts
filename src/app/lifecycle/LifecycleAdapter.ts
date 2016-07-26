@@ -5,6 +5,8 @@ import {Lifecycle} from "./Lifecycle";
  * to implement them if unecessary
  */
 export abstract class LifecycleAdapter implements Lifecycle {
+    abstract create();
+
     abstract start();
 
     abstract pause();
@@ -14,6 +16,9 @@ export abstract class LifecycleAdapter implements Lifecycle {
     abstract stop();
 
     abstract destroy();
+
+    onCreate() {
+    }
 
     onStart() {
     }
