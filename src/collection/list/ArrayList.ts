@@ -38,6 +38,10 @@ export class ArrayList<T> implements List<T> {
         return this.elements.length;
     }
 
+    clear() {
+        this.elements = [];
+    }
+
     find(predicate:(element:T) => boolean):T {
         let iterator:Iterator<T> = this.iterator();
         let element;

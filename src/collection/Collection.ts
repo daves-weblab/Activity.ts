@@ -11,4 +11,6 @@ export interface Collection<T> extends Iterable<T> {
     map(operator:(element:T) => T):Collection<T>;
 
     size():number;
+    
+    clear();
 }

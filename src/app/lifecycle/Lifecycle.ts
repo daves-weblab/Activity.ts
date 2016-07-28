@@ -1,3 +1,5 @@
+import {Signal} from "../../util/Events";
+
 export interface Lifecycle {
     create();
 
@@ -23,3 +25,5 @@ export interface Lifecycle {
     
     onDestroy();
 }
+
+export interface LifecycleEvent extends Signal {}

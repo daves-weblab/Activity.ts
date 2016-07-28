@@ -82,4 +82,8 @@ export abstract class AbstractMap<K, V> implements Map<K, V> {
     size():number {
         return this.length;
     }
+    
+    clear() {
+        this.elements = {};
+    }
 }

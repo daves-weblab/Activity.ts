@@ -22,4 +22,6 @@ export interface Map<K, V> {
     forEach(iteration:(entry:Entry<K, V>) => void);
 
     size():number;
+    
+    clear();
 }

@@ -2,6 +2,9 @@ import {UUID} from "../../util/uuid/UUID";
 import {LifecycleAdapter} from "../lifecycle/LifecycleAdapter";
 import {StringMap} from "../../collection/map/StringMap";
 import {ActivityState} from "./ActivityState";
+import {EventDispatcher, EventDispatcherContainer} from "../../util/Events";
+import {LifecycleEvent} from "../lifecycle/Lifecycle";
+import {ActivityAlreadDestroyedException} from "./ActivityAlreadDestroyedException";
 
 export class Activity extends LifecycleAdapter {
     public static get UUID_NAMESPACE():string {
@@ -12,6 +15,27 @@ export class Activity extends LifecycleAdapter {
     private state:ActivityState;
     private parent:Activity = null;
     private children:StringMap<Activity>;
+
+    /**
+     * Classes extending Activity can use these events to hook in between
+     * the core lifecycle implementation and the lifecycle callbacks.
+     *
+     * This is useful for implementing activities which have custom
+     * code before the actual lifecycle callbacks.
+     *
+     * This also enables libraries and plugins to hook into the lifecycle of an
+     * activity.
+     *
+     * @type {EventDispatcherContainer<LifecycleEvent>}
+     */
+    private dispatcherContainer:EventDispatcherContainer<LifecycleEvent> = new EventDispatcherContainer<LifecycleEvent>([
+        'create',
+        'start',
+        'pause',
+        'resume',
+        'stop',
+        'destroy'
+    ]);
 
     constructor(create:boolean = true) {
         super();
@@ -26,7 +50,7 @@ export class Activity extends LifecycleAdapter {
     }
 
     getApplication() {
-        // TODO
+        // todo
     }
 
     hasParent():boolean {
@@ -74,7 +98,7 @@ export class Activity extends LifecycleAdapter {
     removeChildById(id:number) {
         let child = this.children.get(id);
 
-        if(child) {
+        if (child) {
             child.removeParent();
             this.children.remove(id);
         }
@@ -92,51 +116,83 @@ export class Activity extends LifecycleAdapter {
         return this.state;
     }
 
+    getDispatcher(name:string):EventDispatcher<LifecycleEvent> {
+        return this.dispatcherContainer.getDispatcher(name);
+    }
+    
+    private ensureAlive() {
+        if(this.getState() == ActivityState.DESTROYED) throw new ActivityAlreadDestroyedException();
+    }
+
     create() {
+        this.ensureAlive();
+
         this.id = UUID.getId(Activity.UUID_NAMESPACE);
         this.children = new StringMap<Activity>();
 
         this.state = ActivityState.CREATED;
 
+        this.getDispatcher('create').dispatch();
+
         this.onCreate();
     }
 
     start() {
-        // TODO
+        this.ensureAlive();
+
+        // todo
 
         this.state = ActivityState.STARTED;
+
+        this.getDispatcher('start').dispatch();
 
         this.onStart();
     }
 
     pause() {
-        // TODO
+        this.ensureAlive();
+
+        // todo
 
         this.state = ActivityState.PAUSED;
+
+        this.getDispatcher('pause').dispatch();
 
         this.onPause();
     }
 
     resume() {
-        // TODO
+        this.ensureAlive();
+
+        // todo
 
         this.state = ActivityState.RESUMED;
+
+        this.getDispatcher('resume').dispatch();
 
         this.onResume();
     }
 
     stop() {
-        // TODO
+        this.ensureAlive();
+
+        // todo
 
         this.state = ActivityState.STOPPED;
+
+        this.getDispatcher('stop').dispatch();
 
         this.onStop();
     }
 
     destroy() {
-        // TODO
+        this.ensureAlive();
+        
+        // todo
 
         this.state = ActivityState.DESTROYED;
+
+        this.getDispatcher('destroy').dispatch();
 
         this.onDestroy();
 
