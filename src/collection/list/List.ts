@@ -7,5 +7,7 @@ export interface List<T> extends Collection<T> {
 
     remove(element:T, all?:boolean);
 
+    removeAll(elements:List<T>);
+
     removeByIndex(index:number);
 }

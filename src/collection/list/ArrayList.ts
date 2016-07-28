@@ -22,6 +22,12 @@ export class ArrayList<T> implements List<T> {
         ArrayHelper.remove(this.elements, element, all);
     }
 
+    removeAll(elements:List<T>) {
+        elements.forEach((element:T) => {
+            this.remove(element);
+        });
+    }
+
     removeByIndex(index:number) {
         if (index >= this.elements.length) throw new IndexOutOfBoundsException();
 
