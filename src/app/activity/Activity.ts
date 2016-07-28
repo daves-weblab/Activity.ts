@@ -2,10 +2,11 @@ import {UUID} from "../../util/uuid/UUID";
 import {LifecycleAdapter} from "../lifecycle/LifecycleAdapter";
 import {StringMap} from "../../collection/map/StringMap";
 import {ActivityState} from "./ActivityState";
-import {EventDispatcher, EventDispatcherContainer} from "../../util/Events";
 import {LifecycleEvent} from "../lifecycle/LifecycleEvent";
 import {ActivityAlreadDestroyedException} from "./ActivityAlreadDestroyedException";
 import {ArrayHelper} from "../../util/array/ArrayHelper";
+import {EventDispatcherContainer} from "../event/EventDispatcherContainer";
+import {EventDispatcher} from "../event/EventDispatcher";
 
 /**
  * Activities represent small portions of an application that can either

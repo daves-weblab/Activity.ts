@@ -1,18 +1,8 @@
-import {StringMap} from "../collection/map/StringMap";
-import {List} from "../collection/list/List";
-import {ArrayList} from "../collection/list/ArrayList";
-import {Entry} from "../collection/map/Entry";
-import {ObjectHelper} from "../util/object/ObjectHelper";
-import {NullPointerException} from "../exceptions/NullPointerException";
-
-export interface Signal {
-    ();
-}
-
-export interface Subscribable<Handler extends Function> {
-    subscribe(domain:string, handler:Handler, context?:any):void;
-    unsubscribe(domain:string, handler?:Handler, context?:any):void;
-}
+import {StringMap} from "../../collection/map/StringMap";
+import {List} from "../../collection/list/List";
+import {ArrayList} from "../../collection/list/ArrayList";
+import {Entry} from "../../collection/map/Entry";
+import {Subscribable} from "./Subscribable";
 
 interface EventHandler<Handler> {
     callback:Handler,
@@ -70,29 +60,5 @@ export class EventDispatcher<Handler extends Function> implements Subscribable<H
     
     destroy() {
         this.handlers.clear();
-    }
-}
-
-export class EventDispatcherContainer<Handler extends Function> {
-    private dispatchers:StringMap<EventDispatcher<Handler>> = new StringMap<EventDispatcher<Handler>>();
-
-    constructor(dispatcherNames:string[]) {
-        dispatcherNames.forEach((name:string) => {
-            this.dispatchers.put(name, new EventDispatcher<Handler>());
-        });
-    }
-    
-    getDispatcher(name:string):EventDispatcher<Handler> {
-        if(!this.dispatchers.has(name)) throw new NullPointerException();
-        
-        return this.dispatchers.get(name);
-    }
-    
-    removeDispatcher(name:string) {
-        this.dispatchers.remove(name);
-    }
-    
-    destroy() {
-        this.dispatchers.clear();
     }
 }

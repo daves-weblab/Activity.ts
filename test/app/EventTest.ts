@@ -1,5 +1,5 @@
 import * as tsUnit from "../tsUnit/tsUnit";
-import {EventDispatcher} from "../../src/util/Events";
+import {EventDispatcher} from "../../src/app/event/EventDispatcher";
 
 interface CustomEventHandler {
     ():void;

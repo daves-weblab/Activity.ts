@@ -1,4 +1,4 @@
-import {Signal} from "../../util/Events";
+import {Signal} from "../event/Signal";
 
 /**
  * Simple signal abstraction for lifecycle events.
