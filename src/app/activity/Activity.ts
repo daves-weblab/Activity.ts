@@ -315,9 +315,9 @@ export class Activity extends LifecycleAdapter {
      *  if the activity has already been destroyed.
      */
     pause() {
-        this.applyToChildren('pause');
-
         this.ensureAlive();
+
+        this.applyToChildren('pause');
 
         // todo
 
@@ -355,9 +355,9 @@ export class Activity extends LifecycleAdapter {
      *  if the activity has already been destroyed.
      */
     stop() {
-        this.applyToChildren('stop');
-
         this.ensureAlive();
+
+        this.applyToChildren('stop');
 
         // todo
 
@@ -372,9 +372,9 @@ export class Activity extends LifecycleAdapter {
      * destroy lifecycle method.
      */
     destroy() {
-        this.applyToChildren('destroy');
-
         this.ensureAlive();
+
+        this.applyToChildren('destroy');
 
         // todo
 
