@@ -384,6 +384,13 @@ export class Activity extends LifecycleAdapter {
 
         this.onDestroy();
 
+        // cleanup the event dispatchers
+        this.dispatcherContainer.destroy();
+
+        // clean up children and parent
+        this.children.clear();
+        this.removeParent();
+
         // cleanup logic is complete
         // unset the activities id
         UUID.unsetId(this.id, Activity.UUID_NAMESPACE);

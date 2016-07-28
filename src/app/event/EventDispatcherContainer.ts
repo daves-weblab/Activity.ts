@@ -22,6 +22,10 @@ export class EventDispatcherContainer<Handler extends Function> {
     }
 
     destroy() {
+        this.dispatchers.valueSet().forEach((dispatcher:EventDispatcher<Handler>) => {
+            dispatcher.destroy();
+        });
+
         this.dispatchers.clear();
     }
 }
