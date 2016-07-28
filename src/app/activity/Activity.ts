@@ -5,11 +5,27 @@ import {ActivityState} from "./ActivityState";
 import {EventDispatcher, EventDispatcherContainer} from "../../util/Events";
 import {LifecycleEvent} from "../lifecycle/Lifecycle";
 import {ActivityAlreadDestroyedException} from "./ActivityAlreadDestroyedException";
+import {ArrayHelper} from "../../util/array/ArrayHelper";
 
+/**
+ * Activities represent small portions of an application that can either
+ * run in the background or be rendered as some sort of module on the page.
+ * Activities can be nested and manage their children accordingly based on their
+ * own lifecycle.
+ */
 export class Activity extends LifecycleAdapter {
     public static get UUID_NAMESPACE():string {
         return 'activity';
     }
+
+    private static LIFECYCLE_METHODS:string[] = [
+        'create',
+        'start',
+        'pause',
+        'resume',
+        'stop',
+        'destroy'
+    ];
 
     private id:number = null;
     private state:ActivityState;
@@ -39,6 +55,9 @@ export class Activity extends LifecycleAdapter {
 
     constructor(create:boolean = true) {
         super();
+
+        this.children = new StringMap<Activity>();
+        this.id = UUID.getId(Activity.UUID_NAMESPACE);
 
         if (create) {
             this.create();
@@ -127,14 +146,13 @@ export class Activity extends LifecycleAdapter {
     create() {
         this.ensureAlive();
 
-        this.id = UUID.getId(Activity.UUID_NAMESPACE);
-        this.children = new StringMap<Activity>();
-
         this.state = ActivityState.CREATED;
 
         this.getDispatcher('create').dispatch();
 
         this.onCreate();
+
+        this.applyToChildren('create');
     }
 
     start() {
@@ -147,9 +165,13 @@ export class Activity extends LifecycleAdapter {
         this.getDispatcher('start').dispatch();
 
         this.onStart();
+
+        this.applyToChildren('start');
     }
 
     pause() {
+        this.applyToChildren('pause');
+
         this.ensureAlive();
 
         // todo
@@ -171,9 +193,13 @@ export class Activity extends LifecycleAdapter {
         this.getDispatcher('resume').dispatch();
 
         this.onResume();
+
+        this.applyToChildren('resume');
     }
 
     stop() {
+        this.applyToChildren('stop');
+
         this.ensureAlive();
 
         // todo
@@ -186,6 +212,8 @@ export class Activity extends LifecycleAdapter {
     }
 
     destroy() {
+        this.applyToChildren('destroy');
+
         this.ensureAlive();
         
         // todo
@@ -200,6 +228,18 @@ export class Activity extends LifecycleAdapter {
         // unset the activities id
         UUID.unsetId(this.id, Activity.UUID_NAMESPACE);
         this.id = null;
+    }
+    
+    private isLifecycleMethod(lifecycleMethod:string) {
+        return ArrayHelper.exists(Activity.LIFECYCLE_METHODS, lifecycleMethod);
+    }
+    
+    private applyToChildren(lifecycleMethod:string) {
+        if(!this.isLifecycleMethod(lifecycleMethod)) return;
+
+        this.children.valueSet().forEach((child:Activity) => {
+            child[lifecycleMethod].call(child);
+        });
     }
 }
 

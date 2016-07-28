@@ -19,6 +19,14 @@ export namespace ArrayHelper {
         }
     }
 
+    export function exists<T>(elements:Array<T>, element:T):boolean {
+        for(let i = 0; i < elements.length; i++) {
+            if(elements[i] == element) return true;
+        }
+
+        return false;
+    }
+
     export function first<T>(elements:Array<T>):T {
         if(!elements.length) return null;
 
