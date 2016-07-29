@@ -11,27 +11,27 @@ export interface Lifecycle {
     /**
      * create the component.
      */
-    create();
+    create():Lifecycle;
 
     /**
      * start the component.
      */
-    start();
+    start():Lifecycle;
 
     /**
      * pause the component.
      */
-    pause();
+    pause():Lifecycle;
 
     /**
      * resume the component.
      */
-    resume();
+    resume():Lifecycle;
 
     /**
      * stop the component.
      */
-    stop();
+    stop():Lifecycle;
 
     /**
      * destroy the component.
@@ -57,6 +57,11 @@ export interface Lifecycle {
      * lifecycle callback for resume.
      */
     onResume();
+
+    /**
+     * lifecycle callback for restart.
+     */
+    onRestart();
 
     /**
      * lifecycle callback for stop.

@@ -7,6 +7,8 @@ import {ActivityAlreadDestroyedException} from "./ActivityAlreadDestroyedExcepti
 import {ArrayHelper} from "../../util/array/ArrayHelper";
 import {EventDispatcherContainer} from "../event/EventDispatcherContainer";
 import {EventDispatcher} from "../event/EventDispatcher";
+import {ActivityNotYetCreatedException} from "./ActivityNotYetCreatedException";
+import {Lifecycle} from "../lifecycle/Lifecycle";
 
 /**
  * Activities represent small portions of an application that can either
@@ -62,6 +64,15 @@ export class Activity extends LifecycleAdapter {
     private state:ActivityState = ActivityState.CONSTRUCTED;
 
     /**
+     * defines if the activity has been
+     * created or not.
+     * 
+     * @type {boolean}
+     * @private
+     */
+    private created:boolean = false;
+    
+    /**
      * parent activity
      *
      * @type {Activity}
@@ -94,6 +105,7 @@ export class Activity extends LifecycleAdapter {
         'start',
         'pause',
         'resume',
+        'restart',
         'stop',
         'destroy'
     ]);
@@ -162,6 +174,17 @@ export class Activity extends LifecycleAdapter {
      */
     removeParent() {
         this.parent = null;
+    }
+
+    /**
+     * detach activity from its parent, clearing
+     * the two-way reference.
+     */
+    detachFromParent() {
+        if(this.hasParent()) {
+            this.getParent().removeChild(this);
+            this.removeParent();
+        }
     }
 
     /**
@@ -250,6 +273,60 @@ export class Activity extends LifecycleAdapter {
     }
 
     /**
+     * check if the activity was already created.
+     * 
+     * @returns {boolean}
+     */
+    wasCreated() {
+        return this.created;
+    }
+
+    /**
+     * check if the activity is in the created state.
+     * 
+     * @returns {boolean}
+     */
+    isCreated() {
+        return this.getState() == ActivityState.CREATED;
+    }
+
+    /**
+     * check if the activity is in the started state.
+     *
+     * @returns {boolean}
+     */
+    isStarted() {
+        return this.getState() == ActivityState.STARTED;
+    }
+
+    /**
+     * check if the activity is in the resumed state.
+     *
+     * @returns {boolean}
+     */
+    isResumed() {
+        return this.getState() == ActivityState.RESUMED;
+    }
+
+    /**
+     * check if the activity is in the paused state.
+     *
+     * @returns {boolean}
+     */
+    isPaused() {
+        return this.getState() == ActivityState.PAUSED;
+    }
+
+    /**
+     * check if the activity is in the stopped state.
+     *
+     * @returns {boolean}
+     */
+    isStopped() {
+        return this.getState() == ActivityState.STOPPED;
+    }
+
+    /**
      * get an event dispatcher for the lifecycle hooks.
      *
      * @param {string} name
@@ -266,8 +343,12 @@ export class Activity extends LifecycleAdapter {
      *
      * @throws ActivityAlreadyDestroyedException
      */
-    private ensureAlive() {
-        if (this.getState() == ActivityState.DESTROYED) throw new ActivityAlreadDestroyedException();
+    private ensureAlive(onCreate:boolean = false) {
+        if (this.isDestroyed()) throw new ActivityAlreadDestroyedException();
+
+        if(!onCreate) {
+            if (!this.wasCreated()) throw new ActivityNotYetCreatedException();
+        }
     }
 
     /**
@@ -276,16 +357,19 @@ export class Activity extends LifecycleAdapter {
      * @throws ActivityAlreadyDestroyedException
      *  if the activity has already been destroyed.
      */
-    create() {
-        this.ensureAlive();
+    create():Lifecycle {
+        this.ensureAlive(true);
 
         this.state = ActivityState.CREATED;
 
         this.getDispatcher('create').dispatch();
-
         this.onCreate();
 
         this.applyToChildren('create');
+        
+        this.created = true;
+        
+        return this;
     }
 
     /**
@@ -294,18 +378,24 @@ export class Activity extends LifecycleAdapter {
      * @throws ActivityAlreadyDestroyedException
      *  if the activity has already been destroyed.
      */
-    start() {
+    start():Lifecycle {
         this.ensureAlive();
 
-        // todo
+        if(!this.isCreated() && !this.isStopped()) return;
+
+        if(this.isCreated()) {
+            this.getDispatcher('start').dispatch();
+            this.onStart();
+        } else {
+            this.getDispatcher('restart').dispatch();
+            this.onRestart();
+        }
 
         this.state = ActivityState.STARTED;
 
-        this.getDispatcher('start').dispatch();
-
-        this.onStart();
-
         this.applyToChildren('start');
+        
+        return this;
     }
 
     /**
@@ -314,18 +404,19 @@ export class Activity extends LifecycleAdapter {
      * @throws ActivityAlreadyDestroyedException
      *  if the activity has already been destroyed.
      */
-    pause() {
+    pause():Lifecycle {
         this.ensureAlive();
+        
+        if(!this.isRunning()) return;
 
         this.applyToChildren('pause');
-
-        // todo
 
         this.state = ActivityState.PAUSED;
 
         this.getDispatcher('pause').dispatch();
-
         this.onPause();
+        
+        return this;
     }
 
     /**
@@ -334,18 +425,19 @@ export class Activity extends LifecycleAdapter {
      * @throws ActivityAlreadyDestroyedException
      *  if the activity has already been destroyed.
      */
-    resume() {
+    resume():Lifecycle {
         this.ensureAlive();
 
-        // todo
+        if(!this.isRunning()) return;
 
         this.state = ActivityState.RESUMED;
 
         this.getDispatcher('resume').dispatch();
-
         this.onResume();
 
         this.applyToChildren('resume');
+        
+        return this;
     }
 
     /**
@@ -354,18 +446,23 @@ export class Activity extends LifecycleAdapter {
      * @throws ActivityAlreadyDestroyedException
      *  if the activity has already been destroyed.
      */
-    stop() {
+    stop():Lifecycle {
         this.ensureAlive();
 
-        this.applyToChildren('stop');
+        if(!this.isRunning() && !this.isPaused()) return;
 
-        // todo
+        if(this.isRunning()) {
+            this.pause();
+        }
+
+        this.applyToChildren('stop');
 
         this.state = ActivityState.STOPPED;
 
         this.getDispatcher('stop').dispatch();
-
         this.onStop();
+        
+        return this;
     }
 
     /**
@@ -374,14 +471,15 @@ export class Activity extends LifecycleAdapter {
     destroy() {
         this.ensureAlive();
 
-        this.applyToChildren('destroy');
+        if(this.isRunning()) {
+            this.stop();
+        }
 
-        // todo
+        this.applyToChildren('destroy');
 
         this.state = ActivityState.DESTROYED;
 
         this.getDispatcher('destroy').dispatch();
-
         this.onDestroy();
 
         // cleanup the event dispatchers

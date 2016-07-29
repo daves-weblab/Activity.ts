@@ -87,13 +87,9 @@ export class ArrayList<T> implements List<T> {
         }
     }
 
-    map(operator:(element:T) => T):Collection<T> {
-        let list:List<T> = new ArrayList<T>();
-        
-        this.forEach((element:T) => {
-            list.add(operator(element));
-        });
-        
-        return list;
+    map(operator:(element:T) => T) {
+        for(let i = 0; i < this.elements.length; i++) {
+            this.elements[i] = operator(this.elements[i]);
+        }
     }
 }

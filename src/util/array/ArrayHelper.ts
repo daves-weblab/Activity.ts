@@ -6,10 +6,10 @@ export namespace ArrayHelper {
     export function remove<T>(elements:Array<T>, element:T, all:boolean = false) {
         let done = false;
 
-        while(!done) {
+        while (!done) {
             let index = elements.indexOf(element);
 
-            if(index != -1) {
+            if (index != -1) {
                 ArrayHelper.removeByIndex(elements, index);
 
                 done = !all;
@@ -19,16 +19,24 @@ export namespace ArrayHelper {
         }
     }
 
-    export function exists<T>(elements:Array<T>, element:T):boolean {
+    export function until<T>(elements:Array<T>, predicate:(element:T) => boolean):boolean {
         for(let i = 0; i < elements.length; i++) {
-            if(elements[i] == element) return true;
+            if(!predicate(elements[i])) return false;
+        }
+
+        return true;
+    }
+
+    export function exists<T>(elements:Array<T>, element:T):boolean {
+        for (let i = 0; i < elements.length; i++) {
+            if (elements[i] == element) return true;
         }
 
         return false;
     }
 
     export function first<T>(elements:Array<T>):T {
-        if(!elements.length) return null;
+        if (!elements.length) return null;
 
         return elements[0];
     }
@@ -38,7 +46,7 @@ export namespace ArrayHelper {
     }
 
     export function removeByIndex<T>(elements:Array<T>, index:number) {
-        if(index >= elements.length) return elements;
+        if (index >= elements.length) return elements;
 
         elements.splice(index, 1);
     }

@@ -36,12 +36,12 @@ export interface Collection<T> extends Iterable<T> {
     forEach(iteration:(element:T) => any);
 
     /**
-     * apply a method on each element and create
-     * a new list based on it.
+     * apply a method on each element in order
+     * to change it.
      *
      * @param {Function} operator
      */
-    map(operator:(element:T) => T):Collection<T>;
+    map(operator:(element:T) => T);
 
     /**
      * get the size of the collection.

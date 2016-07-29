@@ -31,6 +31,9 @@ export abstract class LifecycleAdapter implements Lifecycle {
     onResume() {
     }
 
+    onRestart() {
+    }
+
     onStop() {
     }
 
