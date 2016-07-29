@@ -101,13 +101,27 @@ export class Activity extends LifecycleAdapter {
      * @type {EventDispatcherContainer<LifecycleEvent>}
      */
     private dispatcherContainer:EventDispatcherContainer<LifecycleEvent> = new EventDispatcherContainer<LifecycleEvent>([
+        'beforeCreate',
         'create',
+        'afterCreate',
+        'beforeStart',
         'start',
+        'afterStart',
+        'beforePause',
         'pause',
+        'afterPause',
+        'beforeResume',
         'resume',
+        'afterResume',
+        'beforeRestart',
         'restart',
+        'afterRestart',
+        'beforeStop',
         'stop',
-        'destroy'
+        'afterStop',
+        'beforeDestroy',
+        'destroy',
+        'afterDestroy'
     ]);
 
     /**
@@ -126,6 +140,8 @@ export class Activity extends LifecycleAdapter {
         if (create) {
             this.create();
         }
+
+        this.getDispatcher()
     }
 
     /**
@@ -360,6 +376,8 @@ export class Activity extends LifecycleAdapter {
     create():Lifecycle {
         this.ensureAlive(true);
 
+        this.getDispatcher('beforeCreate').dispatch();
+
         this.state = ActivityState.CREATED;
 
         this.getDispatcher('create').dispatch();
@@ -368,6 +386,8 @@ export class Activity extends LifecycleAdapter {
         this.applyToChildren('create');
         
         this.created = true;
+
+        this.getDispatcher('afterCreate').dispatch();
         
         return this;
     }
@@ -383,6 +403,8 @@ export class Activity extends LifecycleAdapter {
 
         if(!this.isCreated() && !this.isStopped()) return;
 
+        this.getDispatcher('beforeStart').dispatch();
+
         if(this.isCreated()) {
             this.getDispatcher('start').dispatch();
             this.onStart();
@@ -394,6 +416,8 @@ export class Activity extends LifecycleAdapter {
         this.state = ActivityState.STARTED;
 
         this.applyToChildren('start');
+
+        this.getDispatcher('afterStart').dispatch();
         
         return this;
     }
@@ -409,12 +433,16 @@ export class Activity extends LifecycleAdapter {
         
         if(!this.isRunning()) return;
 
+        this.getDispatcher('beforePause').dispatch();
+
         this.applyToChildren('pause');
 
         this.state = ActivityState.PAUSED;
 
         this.getDispatcher('pause').dispatch();
         this.onPause();
+
+        this.getDispatcher('afterPause').dispatch();
         
         return this;
     }
@@ -430,12 +458,16 @@ export class Activity extends LifecycleAdapter {
 
         if(!this.isRunning()) return;
 
+        this.getDispatcher('beforeResume').dispatch();
+
         this.state = ActivityState.RESUMED;
 
         this.getDispatcher('resume').dispatch();
         this.onResume();
 
         this.applyToChildren('resume');
+
+        this.getDispatcher('afterResume').dispatch();
         
         return this;
     }
@@ -449,6 +481,8 @@ export class Activity extends LifecycleAdapter {
     stop():Lifecycle {
         this.ensureAlive();
 
+        this.getDispatcher('beforeStop').dispatch();
+
         if(!this.isRunning() && !this.isPaused()) return;
 
         if(this.isRunning()) {
@@ -461,6 +495,8 @@ export class Activity extends LifecycleAdapter {
 
         this.getDispatcher('stop').dispatch();
         this.onStop();
+
+        this.getDispatcher('afterStop').dispatch();
         
         return this;
     }
@@ -474,6 +510,8 @@ export class Activity extends LifecycleAdapter {
         if(this.isRunning()) {
             this.stop();
         }
+
+        this.getDispatcher('beforeDestroy').dispatch();
 
         this.applyToChildren('destroy');
 
@@ -493,6 +531,8 @@ export class Activity extends LifecycleAdapter {
         // unset the activities id
         UUID.unsetId(this.id, Activity.UUID_NAMESPACE);
         this.id = null;
+
+        this.getDispatcher('afterDestroy').dispatch();
     }
 
     /**
