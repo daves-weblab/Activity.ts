@@ -535,9 +535,6 @@ export class Activity extends LifecycleAdapter {
         this.getDispatcher('destroy').dispatch();
         this.onDestroy();
 
-        // cleanup the event dispatchers
-        this.dispatcherContainer.destroy();
-
         // clean up children and parent
         this.children.clear();
         this.removeParent();
@@ -548,6 +545,9 @@ export class Activity extends LifecycleAdapter {
         this.id = null;
 
         this.getDispatcher('afterDestroy').dispatch();
+
+        // cleanup the event dispatchers
+        this.dispatcherContainer.destroy();
     }
 
     /**
