@@ -13,8 +13,6 @@ export abstract class LifecycleAdapter implements Lifecycle {
 
     abstract pause();
 
-    abstract resume();
-
     abstract stop();
 
     abstract destroy();

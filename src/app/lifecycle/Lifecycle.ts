@@ -24,11 +24,6 @@ export interface Lifecycle {
     pause():Lifecycle;
 
     /**
-     * resume the component.
-     */
-    resume():Lifecycle;
-
-    /**
      * stop the component.
      */
     stop():Lifecycle;

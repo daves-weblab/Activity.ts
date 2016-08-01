@@ -42,7 +42,6 @@ export class Activity extends LifecycleAdapter {
         'create',
         'start',
         'pause',
-        'resume',
         'stop',
         'destroy'
     ];
@@ -140,8 +139,6 @@ export class Activity extends LifecycleAdapter {
         if (create) {
             this.create();
         }
-
-        this.getDispatcher()
     }
 
     /**
@@ -375,6 +372,8 @@ export class Activity extends LifecycleAdapter {
      */
     create():Lifecycle {
         this.ensureAlive(true);
+        
+        if(this.wasCreated()) return this;
 
         this.getDispatcher('beforeCreate').dispatch();
 
@@ -393,7 +392,9 @@ export class Activity extends LifecycleAdapter {
     }
 
     /**
-     * start lifecycle method.
+     * start lifecycle method. this method either starts,
+     * restarts or resumes an activity, based on its current
+     * state.
      *
      * @throws ActivityAlreadyDestroyedException
      *  if the activity has already been destroyed.
@@ -401,8 +402,26 @@ export class Activity extends LifecycleAdapter {
     start():Lifecycle {
         this.ensureAlive();
 
-        if(!this.isCreated() && !this.isStopped()) return;
+        if(this.isCreated || this.isStopped()) {
+            return this._start()._resume();
+        }
 
+        if(this.isPaused()) {
+            return this._resume();
+        }
+
+        return this;
+    }
+
+    /**
+     * start the activity, this either dispatches the start
+     * or the restart event, based on the activities current
+     * state.
+     *
+     * @returns {Activity}
+     * @private
+     */
+    private _start():Activity {
         this.getDispatcher('beforeStart').dispatch();
 
         if(this.isCreated()) {
@@ -418,7 +437,28 @@ export class Activity extends LifecycleAdapter {
         this.applyToChildren('start');
 
         this.getDispatcher('afterStart').dispatch();
-        
+
+        return this;
+    }
+
+    /**
+     * resume the activity.
+     *
+     * @returns {Activity}
+     * @private
+     */
+    private _resume():Activity {
+        this.getDispatcher('beforeResume').dispatch();
+
+        this.state = ActivityState.RESUMED;
+
+        this.getDispatcher('resume').dispatch();
+        this.onResume();
+
+        this.applyToChildren('resume');
+
+        this.getDispatcher('afterResume').dispatch();
+
         return this;
     }
 
@@ -431,7 +471,7 @@ export class Activity extends LifecycleAdapter {
     pause():Lifecycle {
         this.ensureAlive();
         
-        if(!this.isRunning()) return;
+        if(!this.isRunning()) return this;
 
         this.getDispatcher('beforePause').dispatch();
 
@@ -448,31 +488,6 @@ export class Activity extends LifecycleAdapter {
     }
 
     /**
-     * resume lifecycle method.
-     *
-     * @throws ActivityAlreadyDestroyedException
-     *  if the activity has already been destroyed.
-     */
-    resume():Lifecycle {
-        this.ensureAlive();
-
-        if(!this.isRunning()) return;
-
-        this.getDispatcher('beforeResume').dispatch();
-
-        this.state = ActivityState.RESUMED;
-
-        this.getDispatcher('resume').dispatch();
-        this.onResume();
-
-        this.applyToChildren('resume');
-
-        this.getDispatcher('afterResume').dispatch();
-        
-        return this;
-    }
-
-    /**
      * stop lifecycle method.
      *
      * @throws ActivityAlreadyDestroyedException
@@ -480,10 +495,10 @@ export class Activity extends LifecycleAdapter {
      */
     stop():Lifecycle {
         this.ensureAlive();
-
+        
+        if(!this.isRunning() && !this.isPaused()) return this;
+        
         this.getDispatcher('beforeStop').dispatch();
-
-        if(!this.isRunning() && !this.isPaused()) return;
 
         if(this.isRunning()) {
             this.pause();
