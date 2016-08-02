@@ -15,4 +15,10 @@ export namespace ObjectHelper {
             });
         });
     }
+
+    export function isObject(obj:any) {
+        if(obj == null) return false;
+
+        return typeof obj === 'object';
+    }
 }

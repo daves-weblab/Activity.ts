@@ -1,44 +1,51 @@
-import {EventDispatcher} from "../app/event/EventDispatcher";
 import {ModelChangeEvent} from "./ModelChangeEvent";
 import {EventDispatcherContainer} from "../app/event/EventDispatcherContainer";
-import {Computed} from "./attributes/Computed";
-import * as General from "../util/general/General";
+import {GetSetable} from "../util/object/GetSetable";
+import {StringMap} from "../collection/map/StringMap";
+import {Operator} from "./operator/Operator";
+import {List} from "../collection/list/List";
+import {ArrayList} from "../collection/list/ArrayList";
+import {FunctionOperator} from "./operator/FunctionOperator";
 
 export abstract class AbstractModel {
+    private static OPERATOR_KEY:string = '@';
+    
     private dispatcherContainer:EventDispatcherContainer<ModelChangeEvent> = new EventDispatcherContainer<ModelChangeEvent>();
 
+    protected attributes:{} = {};
+
+    protected idAttribute:string = null;
+    protected idAttributes:string[] = null;
+    
     get(key:string) {
-        return this.evaluateGet(key);
+        let partials = key.split('.');
+        
+        if(!partials.length) return null;
+
+        // todo replace with stack
+        let operatorChain:List<Operator> = new ArrayList<Operator>();
+        
+        
     }
 
-    set(key:string, value:any) {
+    private isOperator(partial:string) {
+        return partial.charAt(0) == AbstractModel.OPERATOR_KEY;
+    }
+    
+    set() {
+        
+    }
+    
+    private static __operators__:StringMap<Operator> = new StringMap<Operator>();
 
+    public static registerOperator(name:string, operator:Operator) {
+        this.__operators__.put(name, operator);
     }
 
-    private evaluateGet(key:string) {
-        if (!this.hasAttribute(key)) return null;
-
-        if (this[key] instanceof Computed) {
-            let computed:Computed = this[key];
-            return computed.get(this);
-        }
-
-        return this[key];
-    }
-
-    private hasAttribute(key:string):boolean {
-        if (!General.isFunction(this[key])) return true;
-
-        if (this[key] instanceof Computed) return true;
-
-        return false;
-    }
-
-    getObserverFor(key:string):EventDispatcher<ModelChangeEvent> {
-        if (this.hasAttribute(key)) {
-            return this.dispatcherContainer.ensureDispatcher(key);
-        }
-
-        return null;
+    public static unregisterOperator(name:string) {
+        this.__operators__.remove(name);
     }
 }
+
+AbstractModel.registerOperator('value', new ValueOperator());
+AbstractModel.registerOperator('function', new FunctionOperator());
