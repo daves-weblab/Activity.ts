@@ -54,4 +54,20 @@ export interface Collection<T> extends Iterable<T> {
      * clear the collection.
      */
     clear();
+
+    /**
+     * swap two elements on the given indizes.
+     *
+     * @param {number} index1
+     * @param {number} index2
+     */
+    swap(index1:number, index2:number);
+
+    /**
+     * get the element on the given index.
+     *
+     * @param {number} index
+     * @returns {T}
+     */
+    at(index:number):T;
 }

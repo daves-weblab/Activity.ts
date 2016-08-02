@@ -17,14 +17,14 @@ export class MapIterator<K, V> implements Iterator<Entry<K, V>> {
     }
 
     next():Entry<K, V> {
-        let key:K = this.keySet.get(this.current++);
+        let key:K = this.keySet.at(this.current++);
         return new Entry<K, V>(key, this.map.get(key));
     }
     
     remove() {
         if(this.current == 0) throw new IndexOutOfBoundsException("can not delete without previous call to next().");
 
-        let key:K = this.keySet.get(--this.current);
+        let key:K = this.keySet.at(--this.current);
 
         this.keySet.remove(key);
         this.map.remove(key);

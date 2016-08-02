@@ -3,16 +3,18 @@ import {ArrayIterator} from "../iterator/array/ArrayIterator";
 import {IndexOutOfBoundsException} from "../../exceptions/IndexOutOfBoundsException";
 import {ArrayHelper} from "../../util/array/ArrayHelper";
 import {List} from "./List";
-import {Collection} from "../Collection";
+import * as Collections from "../../util/collection/Collections";
+import {Comparator} from "../comparator/Comparator";
 
 export class ArrayList<T> implements List<T> {
     private elements:Array<T> = [];
+    private comparator:Comparator<T> = null;
 
     add(element:T) {
         ArrayHelper.add(this.elements, element);
     }
 
-    get(index:number):T {
+    at(index:number):T {
         if(index < 0 || this.size() <= index) throw new IndexOutOfBoundsException();
 
         return this.elements[index];
@@ -91,5 +93,22 @@ export class ArrayList<T> implements List<T> {
         for(let i = 0; i < this.elements.length; i++) {
             this.elements[i] = operator(this.elements[i]);
         }
+    }
+    
+    swap(index1:number, index2:number) {
+        let temp:T = this.elements[index1];
+        
+        this.elements[index1] = this.elements[index2];
+        this.elements[index2] = temp;
+    }
+
+    setComparator(comparator:Comparator<T>) {
+        this.comparator = comparator;
+    }
+
+    sort() {
+        if(!this.comparator) return;
+
+        Collections.sort(this, this.comparator);
     }
 }

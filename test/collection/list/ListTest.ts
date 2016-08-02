@@ -1,6 +1,9 @@
 import * as tsUnit from "../../tsUnit/tsUnit";
 import {ArrayList} from "../../../src/collection/list/ArrayList";
 import {List} from "../../../src/collection/list/List";
+import {NumberComparator} from "../../../src/collection/comparator/NumberComparator";
+import * as Collections from "../../../src/util/collection/Collections";
+import {Collection} from "../../../src/collection/Collection";
 
 class ListObject {
     constructor(public value:string) {}
@@ -26,8 +29,8 @@ export class ListTest extends tsUnit.TestClass {
     }
 
     testGet() {
-        this.areIdentical(this.OBJ1, this.list.get(0));
-        this.areIdentical(this.OBJ2, this.list.get(1));
+        this.areIdentical(this.OBJ1, this.list.at(0));
+        this.areIdentical(this.OBJ2, this.list.at(1));
     }
 
     testFind() {
@@ -45,4 +48,34 @@ export class ListTest extends tsUnit.TestClass {
 
         this.areIdentical(1, this.list.size());
     }
+    
+    testSort() {
+        let list:List<number> = new ArrayList<number>();
+
+        for(let i = 0; i < 10; i++) {
+            list.add(Math.floor((Math.random() * 1000) + 1));
+        }
+
+        let output:string = "";
+
+        Collections.sort(list, new NumberComparator());
+
+        this.isTrue(isSorted(list));
+    }
+}
+
+function isSorted(collection:Collection<number>):boolean {
+    let previous:number = 0;
+
+    for(let i = 0; i < collection.size(); i++) {
+        if(i == 0) {
+            previous = collection.at(i);
+            continue;
+        } else {
+            if(previous > collection.at(i)) return false;
+            previous = collection.at(i);
+        }
+    }
+
+    return true;
 }
