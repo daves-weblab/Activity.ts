@@ -1,21 +1,38 @@
 export abstract class Operator {
-    private context:any;
-    private value:any;
-
-    getContext():any {
-        return this.context;
+    private qualifier:string;
+    private previousOperator:Operator;
+    private nextOperator:Operator;
+    
+    getQualifier() {
+        return this.qualifier;
     }
 
-    setContext(context:any) {
-        this.context = context;
+    setQualifier(partial:string) {
+        this.qualifier = partial
     }
 
-    getValue():any {
-        return this.value;
+    setPrevious(operator:any) {
+        this.previousOperator = operator;
     }
 
-    setValue(value:any) {
-        this.value = value;
+    previous():any {
+        if(this.previousOperator) {
+            return this.previousOperator.evaluate();
+        }
+        
+        return null;
+    }
+
+    setNext(operator:Operator) {
+        this.nextOperator = operator;
+    }
+
+    next():any {
+        if(this.nextOperator) {
+            this.nextOperator.evaluate();
+        }
+
+        return null;
     }
 
     abstract evaluate():any;
