@@ -15,8 +15,7 @@
 //
 // UnitHelper.niceResults(result);
 
-import {AbstractModel} from "../src/model/AbstractModel";
-import {Attributes} from "../src/util/annotations/Model";
+import {AbstractModel, Attributes} from "../src/model/AbstractModel";
 
 @Attributes({
     firstname: "",

@@ -5,17 +5,59 @@ import {Operator} from "./operator/Operator";
 import {FunctionOperator} from "./operator/FunctionOperator";
 import {ValueOperator} from "./operator/ValueOperator";
 import {RootOperator} from "./operator/RootOperator";
-import {Attributable} from "./Attributable";
+import {prototype} from "../util/annotations/Class";
+import {ObjectHelper} from "../util/object/ObjectHelper";
+import {ModelService} from "./ModelService";
 
-export abstract class AbstractModel extends Attributable {
+const ATTRIBUTE_DEFINITION_FIELD = "__attributes_definition__";
+const ID_ATTRIBUTE_FIELD = "__id_attribute__";
+
+export function Attributes(attributes:Object) {
+    return function (target:Function) {
+        let attributesDefinition = {};
+
+        ObjectHelper.extend(
+            attributesDefinition,
+            target.prototype[ATTRIBUTE_DEFINITION_FIELD] || {},
+            attributes
+        );
+
+        target.prototype[ATTRIBUTE_DEFINITION_FIELD] = attributesDefinition;
+    }
+}
+
+export function IdAttribute(name:string|Array<string>) {
+    return function (target:Function) {
+        target.prototype[ID_ATTRIBUTE_FIELD] = name;
+    }
+}
+
+export abstract class AbstractModel {
     private static OPERATOR_KEY:string = '@';
     private static FUNCTION_REGEX:RegExp = /[a-zA-Z0-9_]+\(\)/;
     private static PERENTHESIS_REGEX:RegExp = /\(|\)/gi;
 
     private _dispatcherContainer:EventDispatcherContainer<ModelChangeEvent> = new EventDispatcherContainer<ModelChangeEvent>();
 
-    protected _idAttribute:string = null;
-    protected _idAttributes:string[] = null;
+    @prototype("id")
+    ID_ATTRIBUTE_FIELD;
+
+    @prototype({})
+    ATTRIBUTE_DEFINITION_FIELD;
+
+    protected attributes:Object = {};
+
+    constructor(attributes:Object = {}) {
+        ObjectHelper.extend(this.attributes, this.getAttributeDefinition(), attributes);
+    }
+
+    protected getIdAttribute():string|Array<string> {
+        return this[ID_ATTRIBUTE_FIELD];
+    }
+
+    protected getAttributeDefinition():Object {
+        return this[ATTRIBUTE_DEFINITION_FIELD];
+    }
 
     getAttributes():Object {
         return this.attributes;
@@ -74,15 +116,5 @@ export abstract class AbstractModel extends Attributable {
 
     set() {
 
-    }
-
-    private static __operators__:StringMap<{new():Operator}> = new StringMap<{new():Operator}>();
-
-    public static registerOperator(name:string, operator:{new():Operator}) {
-        this.__operators__.put(name, operator);
-    }
-
-    public static unregisterOperator(name:string) {
-        this.__operators__.remove(name);
     }
 }
