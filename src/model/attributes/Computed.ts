@@ -1,5 +1,5 @@
 import * as General from "../../util/general/General";
-import {AbstractModel} from "../Model";
+import {AbstractModel} from "../AbstractModel";
 
 export interface ComputedOptions {
     dependencies?:string[];

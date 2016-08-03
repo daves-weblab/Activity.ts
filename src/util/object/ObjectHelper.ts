@@ -21,4 +21,15 @@ export namespace ObjectHelper {
 
         return typeof obj === 'object';
     }
+
+    export function extendStrict(target:Object, source:Object) {
+        // todo make this recursive if both values are an object!
+        ObjectHelper.forEach(source, (sourceKey:any, value:any) => {
+            ObjectHelper.forEach(target, (targetKey:any) => {
+                if(sourceKey == targetKey) {
+                    target[targetKey] = value;
+                }
+            });
+        });
+    }
 }

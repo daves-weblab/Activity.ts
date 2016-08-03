@@ -1,39 +1,57 @@
 export abstract class Operator {
-    private qualifier:string;
-    private previousOperator:Operator;
-    private nextOperator:Operator;
+    private _data:any;
+    private _qualifier:string;
+    private _previous:Operator;
+    private _next:Operator;
+
+    setData(data:any) {
+        this._data = data;
+    }
     
+    getData():any {
+        return this._data;
+    }
+
     getQualifier() {
-        return this.qualifier;
+        return this._qualifier;
     }
 
     setQualifier(partial:string) {
-        this.qualifier = partial
+        this._qualifier = partial
     }
 
     setPrevious(operator:any) {
-        this.previousOperator = operator;
+        this._previous = operator;
+    }
+
+    getPrevious():Operator {
+        return this._previous;
     }
 
     previous():any {
-        if(this.previousOperator) {
-            return this.previousOperator.evaluate();
+        if(this._previous) {
+            return this._previous.evaluate();
         }
         
         return null;
     }
 
     setNext(operator:Operator) {
-        this.nextOperator = operator;
+        this._next = operator;
+    }
+
+    getNext():Operator {
+        return this._next;
     }
 
     next():any {
-        if(this.nextOperator) {
-            this.nextOperator.evaluate();
+        if(this._next) {
+            return this._next.evaluate();
         }
 
         return null;
     }
 
+    abstract getWorkload():any;
     abstract evaluate():any;
 }
