@@ -5,28 +5,20 @@ import {Operator} from "./operator/Operator";
 import {FunctionOperator} from "./operator/FunctionOperator";
 import {ValueOperator} from "./operator/ValueOperator";
 import {RootOperator} from "./operator/RootOperator";
-import {ObjectHelper} from "../util/object/ObjectHelper";
+import {Attributable} from "./Attributable";
 
-export class AbstractModel {
+export abstract class AbstractModel extends Attributable {
     private static OPERATOR_KEY:string = '@';
     private static FUNCTION_REGEX:RegExp = /[a-zA-Z0-9_]+\(\)/;
     private static PERENTHESIS_REGEX:RegExp = /\(|\)/gi;
 
     private _dispatcherContainer:EventDispatcherContainer<ModelChangeEvent> = new EventDispatcherContainer<ModelChangeEvent>();
 
-    protected attributes:{} = {};
+    protected _idAttribute:string = null;
+    protected _idAttributes:string[] = null;
 
-    protected idAttribute:string = null;
-    protected idAttributes:string[] = null;
-
-    static create(attributes:Object) {
-        let model:AbstractModel = new this();
-        model.extendAttributes(attributes);
-        return model;
-    }
-
-    private extendAttributes(attributes:Object) {
-        ObjectHelper.extendStrict(this.attributes, attributes);
+    getAttributes():Object {
+        return this.attributes;
     }
 
     get(key:string) {

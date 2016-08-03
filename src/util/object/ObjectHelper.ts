@@ -22,14 +22,23 @@ export namespace ObjectHelper {
         return typeof obj === 'object';
     }
 
-    export function extendStrict(target:Object, source:Object) {
-        // todo make this recursive if both values are an object!
-        ObjectHelper.forEach(source, (sourceKey:any, value:any) => {
-            ObjectHelper.forEach(target, (targetKey:any) => {
-                if(sourceKey == targetKey) {
-                    target[targetKey] = value;
-                }
-            });
+    export function extend(target:Object, ...sources:Object[]) {
+        let tmp:Object = {};
+
+        for(let i = 0; i < sources.length; i++) {
+            extendSingle(tmp, sources[i]);
+        }
+
+        extendSingle(target, tmp);
+    }
+
+    function extendSingle(target:Object, source:Object) {
+        ObjectHelper.forEach(source, (key:any, value:any) => {
+            if(isObject(target[key]) && isObject(value)) {
+                extend(target[key], value);
+            } else {
+                target[key] = value;
+            }
         });
     }
 }
