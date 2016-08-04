@@ -2,7 +2,7 @@ import {Operator} from "./Operator";
 
 export class RootOperator extends Operator {
     getWorkload():any {
-        return this.getData();
+        return this.getData()[this.getQualifier()];
     }
 
     evaluate():any {

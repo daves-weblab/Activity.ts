@@ -1,5 +1,5 @@
 import {Test, TestDescription} from "./tsUnit";
-import {ObjectHelper} from "../../src/util/object/ObjectHelper";
+import {forEach} from "../../src/util/object/Objects";
 
 interface GroupedResult {
     passed:boolean,
@@ -34,7 +34,7 @@ export namespace UnitHelper {
         console.log('Unit-test finished ' + (result.errors.length > 0 ? 'with errors' : 'successfully'));
         console.log((result.passes.length + result.errors.length) + ' tests were executed (' + result.passes.length + ' ... ' + result.errors.length + ')');
 
-        ObjectHelper.forEach(groupedResult, (key:string, value:Array<GroupedResult>) => {
+        forEach(groupedResult, (key:string, value:Array<GroupedResult>) => {
             console.log();
             console.log('-------------------');
             console.log();

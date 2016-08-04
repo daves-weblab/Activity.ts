@@ -1,3 +1,3 @@
 export interface Operatable {
-    (value:any):boolean;
+    (qualifier:string, value:any):boolean;
 }

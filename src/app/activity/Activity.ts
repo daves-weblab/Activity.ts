@@ -4,11 +4,11 @@ import {StringMap} from "../../collection/map/StringMap";
 import {ActivityState} from "./ActivityState";
 import {LifecycleEvent} from "../lifecycle/LifecycleEvent";
 import {ActivityAlreadDestroyedException} from "./ActivityAlreadDestroyedException";
-import {ArrayHelper} from "../../util/array/ArrayHelper";
 import {EventDispatcherContainer} from "../event/EventDispatcherContainer";
 import {EventDispatcher} from "../event/EventDispatcher";
 import {ActivityNotYetCreatedException} from "./ActivityNotYetCreatedException";
 import {Lifecycle} from "../lifecycle/Lifecycle";
+import {exists} from "../../util/array/Arrays";
 
 /**
  * Activities represent small portions of an application that can either
@@ -557,7 +557,7 @@ export class Activity extends LifecycleAdapter {
      * @returns {boolean}
      */
     private isLifecycleMethod(lifecycleMethod:string) {
-        return ArrayHelper.exists(Activity.LIFECYCLE_METHODS, lifecycleMethod);
+        return exists(Activity.LIFECYCLE_METHODS, lifecycleMethod);
     }
 
     /**

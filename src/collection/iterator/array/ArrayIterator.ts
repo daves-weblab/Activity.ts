@@ -1,5 +1,5 @@
 import {Iterator} from "../Iterator";
-import {ArrayHelper} from "../../../util/array/ArrayHelper";
+import {removeByIndex} from "../../../util/array/Arrays";
 
 export class ArrayIterator<T> implements Iterator<T> {
     private current:number = 0;
@@ -16,6 +16,6 @@ export class ArrayIterator<T> implements Iterator<T> {
     }
 
     remove() {
-        ArrayHelper.removeByIndex(this.elements, --this.current);
+        removeByIndex(this.elements, --this.current);
     }
 }

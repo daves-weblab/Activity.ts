@@ -1,17 +1,17 @@
 import {Iterator} from "../iterator/Iterator";
 import {ArrayIterator} from "../iterator/array/ArrayIterator";
 import {IndexOutOfBoundsException} from "../../exceptions/IndexOutOfBoundsException";
-import {ArrayHelper} from "../../util/array/ArrayHelper";
 import {List} from "./List";
 import * as Collections from "../../util/collection/Collections";
 import {Comparator} from "../comparator/Comparator";
+import {add, remove, removeByIndex} from "../../util/array/Arrays";
 
 export class ArrayList<T> implements List<T> {
     private elements:Array<T> = [];
     private comparator:Comparator<T> = null;
 
     add(element:T) {
-        ArrayHelper.add(this.elements, element);
+        add(this.elements, element);
     }
 
     at(index:number):T {
@@ -21,7 +21,7 @@ export class ArrayList<T> implements List<T> {
     }
 
     remove(element:T, all:boolean = false) {
-        ArrayHelper.remove(this.elements, element, all);
+        remove(this.elements, element, all);
     }
 
     removeAll(elements:List<T>) {
@@ -33,7 +33,7 @@ export class ArrayList<T> implements List<T> {
     removeByIndex(index:number) {
         if (index >= this.elements.length) throw new IndexOutOfBoundsException();
 
-        this.elements = ArrayHelper.removeByIndex(this.elements, index);
+        this.elements = removeByIndex(this.elements, index);
     }
 
     size():number {

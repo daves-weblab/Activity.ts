@@ -3,6 +3,12 @@ import {Operator} from "./operator/Operator";
 import {List} from "../collection/list/List";
 import {Operatable} from "./operator/Operatable";
 import {ArrayList} from "../collection/list/ArrayList";
+import {ValueOperator} from "./operator/ValueOperator";
+import {FunctionOperator} from "./operator/FunctionOperator";
+import {AbstractModel} from "./AbstractModel";
+import {isFunction} from "../util/general/General";
+import {isObject} from "../util/object/Objects";
+import {ModelOperator} from "./operator/ModelOperator";
 
 interface OperatorMapping {
     target:{new():Operator};
@@ -21,9 +27,9 @@ export let ModelService = {
         operators.put(name, operator);
     },
 
-    getOperatorFor(value:any):Operator {
+    getOperatorFor(qualifier:string, value:any):Operator {
         let mapping = operatorMapping.find((mapping:OperatorMapping) => {
-            return mapping.operatable(value);
+            return mapping.operatable(qualifier, value);
         });
         
         if(mapping) {
@@ -40,3 +46,17 @@ export let ModelService = {
         });
     }
 };
+
+ModelService.mapOperator(ValueOperator, (qualifier:string, value:any) => {
+    if(value instanceof AbstractModel) return false;
+
+    return typeof value == 'number' || typeof value == 'string' || typeof value == 'boolean' || isObject(value);
+});
+
+ModelService.mapOperator(FunctionOperator, (qualifier:string, value:any) => {
+    return isFunction(value);
+});
+
+ModelService.mapOperator(ModelOperator, (qualifier:string, value:any) => {
+    return value instanceof AbstractModel;
+});

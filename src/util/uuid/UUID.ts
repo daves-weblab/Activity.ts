@@ -1,5 +1,5 @@
-import {ArrayHelper} from "../array/ArrayHelper";
 import {NoSuchNamespaceException} from "./exception/NoSuchNamespaceException";
+import {add, removeFirst, first} from "../array/Arrays";
 
 interface IdNamespace {
     currentId:number,
@@ -36,8 +36,8 @@ export namespace UUID {
             uuid = idNamespace.currentId;
             idNamespace.currentId++;
         } else {
-            uuid = ArrayHelper.first(idNamespace.unset);
-            idNamespace.unset = ArrayHelper.removeFirst(idNamespace.unset);
+            uuid = first(idNamespace.unset);
+            idNamespace.unset = removeFirst(idNamespace.unset);
         }
 
         return uuid;
@@ -48,6 +48,6 @@ export namespace UUID {
 
         if(!namespace) throw new NoSuchNamespaceException();
 
-        ArrayHelper.add(idNamespace.unset, id);
+        add(idNamespace.unset, id);
     }
 }

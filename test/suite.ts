@@ -23,24 +23,30 @@ import {AbstractModel, Attributes} from "../src/model/AbstractModel";
     email: ""
 })
 class Profile extends AbstractModel {
+    getFirstname() {
+        return this.get('lastname');
+    }
 }
 
 @Attributes({
-    isAdmin: true
+    age: 0,
+    profile: Profile
 })
-class AdminProfile extends Profile {
+class User extends AbstractModel {
+    getSomething() {
+        return 'something';
+    }
 }
 
 let p = new Profile({
-    firstname: 'David'
+    firstname: "David",
+    lastname: "Riedl",
+    email: "daves.weblab@gmail.com",
 });
-let p2 = new AdminProfile({
-    firstname: 'David',
-    lastname: 'Riedl'
+
+let u = new User({
+    age: 24,
+    profile: p
 });
-let p1 = new Profile();
 
-console.log(p2.getAttributes());
-console.log(p2.get('isAdmin'));
-
-console.log('done');
+console.log(u.get('profile.getFirstname'));

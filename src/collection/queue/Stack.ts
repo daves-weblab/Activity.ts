@@ -1,4 +1,4 @@
-import {ArrayHelper} from "../../util/array/ArrayHelper";
+import {removeByIndex} from "../../util/array/Arrays";
 
 export class Stack<T> {
     private _elements:Array<T> = [];
@@ -21,7 +21,7 @@ export class Stack<T> {
         if (this.empty()) return null;
 
         let value:T = this.peek();
-        ArrayHelper.removeByIndex(this._elements, this.size() - 1);
+        removeByIndex(this._elements, this.size() - 1);
 
         return value;
     }

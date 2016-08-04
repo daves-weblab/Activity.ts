@@ -4,8 +4,8 @@ import {List} from "../list/List";
 import {Entry} from "./Entry";
 import {ArrayList} from "../list/ArrayList";
 import {HashEntry} from "./HashEntry";
-import {ObjectHelper} from "../../util/object/ObjectHelper";
 import {Iterator} from "../iterator/Iterator";
+import {forEach} from "../../util/object/Objects";
 
 export abstract class AbstractMap<K, V> implements Map<K, V> {
     private elements:Object = {};
@@ -54,7 +54,7 @@ export abstract class AbstractMap<K, V> implements Map<K, V> {
     keySet():List<K> {
         let keys:List<K> = new ArrayList<K>();
 
-        ObjectHelper.forEach(this.elements, (key:string, entry:HashEntry<K, V>) => {
+        forEach(this.elements, (key:string, entry:HashEntry<K, V>) => {
             keys.add(entry.source);
         });
 
@@ -64,7 +64,7 @@ export abstract class AbstractMap<K, V> implements Map<K, V> {
     valueSet():List<V> {
         let values:List<V> = new ArrayList<V>();
 
-        ObjectHelper.forEach(this.elements, (key:string, entry:HashEntry<K, V>) => {
+        forEach(this.elements, (key:string, entry:HashEntry<K, V>) => {
             values.add(entry.value);
         });
 

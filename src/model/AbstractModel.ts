@@ -1,12 +1,9 @@
 import {ModelChangeEvent} from "./ModelChangeEvent";
 import {EventDispatcherContainer} from "../app/event/EventDispatcherContainer";
-import {StringMap} from "../collection/map/StringMap";
 import {Operator} from "./operator/Operator";
-import {FunctionOperator} from "./operator/FunctionOperator";
-import {ValueOperator} from "./operator/ValueOperator";
 import {RootOperator} from "./operator/RootOperator";
 import {prototype} from "../util/annotations/Class";
-import {ObjectHelper} from "../util/object/ObjectHelper";
+import {extend} from "../util/object/Objects";
 import {ModelService} from "./ModelService";
 
 const ATTRIBUTE_DEFINITION_FIELD = "__attributes_definition__";
@@ -16,7 +13,7 @@ export function Attributes(attributes:Object) {
     return function (target:Function) {
         let attributesDefinition = {};
 
-        ObjectHelper.extend(
+        extend(
             attributesDefinition,
             target.prototype[ATTRIBUTE_DEFINITION_FIELD] || {},
             attributes
@@ -34,8 +31,6 @@ export function IdAttribute(name:string|Array<string>) {
 
 export abstract class AbstractModel {
     private static OPERATOR_KEY:string = '@';
-    private static FUNCTION_REGEX:RegExp = /[a-zA-Z0-9_]+\(\)/;
-    private static PERENTHESIS_REGEX:RegExp = /\(|\)/gi;
 
     private _dispatcherContainer:EventDispatcherContainer<ModelChangeEvent> = new EventDispatcherContainer<ModelChangeEvent>();
 
@@ -48,7 +43,9 @@ export abstract class AbstractModel {
     protected attributes:Object = {};
 
     constructor(attributes:Object = {}) {
-        ObjectHelper.extend(this.attributes, this.getAttributeDefinition(), attributes);
+        // todo check if attribute definition is an abstract model
+        // --> create new one with passed data if data is not a model itself
+        extend(this.attributes, this.getAttributeDefinition(), attributes);
     }
 
     protected getIdAttribute():string|Array<string> {
@@ -73,18 +70,19 @@ export abstract class AbstractModel {
         let current:Operator = null;
 
         root.setData(this.attributes);
+        root.setQualifier(partials[0]);
 
-        for (let i = 0; i < partials.length; i++) {
+        for (let i = 1; i < partials.length; i++) {
             let partial:string = partials[i];
 
             if (this.isOperator(partial)) {
                 // todo
-            } else if (this.isFunction(partial)) {
-                partial = this.stripFunctionParenthesis(partial);
-                current = new FunctionOperator();
             } else {
-                current = new ValueOperator();
+                current = ModelService.getOperatorFor(partial, previous.getWorkload());
             }
+
+            // fixme throw a custom exception here
+            if(!current) throw new Error();
 
             current.setQualifier(partial);
             current.setPrevious(previous);
@@ -92,9 +90,6 @@ export abstract class AbstractModel {
             if (previous instanceof Operator) {
                 previous.setNext(current);
             }
-
-            previous.setNext(current);
-            current.setPrevious(previous);
 
             previous = current;
         }
@@ -104,14 +99,6 @@ export abstract class AbstractModel {
 
     private isOperator(partial:string) {
         return partial.charAt(0) == AbstractModel.OPERATOR_KEY;
-    }
-
-    private isFunction(partial:string) {
-        return partial.match(AbstractModel.FUNCTION_REGEX);
-    }
-
-    private stripFunctionParenthesis(partial:string) {
-        return partial.replace(AbstractModel.PERENTHESIS_REGEX, '');
     }
 
     set() {
