@@ -27,15 +27,15 @@ export let ModelService = {
         operators.put(name, operator);
     },
 
-    getOperatorFor(qualifier:string, value:any):Operator {
+    getOperatorFor(value:any):Operator {
         let mapping = operatorMapping.find((mapping:OperatorMapping) => {
-            return mapping.operatable(qualifier, value);
+            return mapping.operatable(value);
         });
-        
+
         if(mapping) {
             return new mapping.target();
         }
-        
+
         return null;
     },
 
@@ -47,16 +47,16 @@ export let ModelService = {
     }
 };
 
-ModelService.mapOperator(ValueOperator, (qualifier:string, value:any) => {
+ModelService.mapOperator(ValueOperator, (value:any) => {
     if(value instanceof AbstractModel) return false;
 
     return typeof value == 'number' || typeof value == 'string' || typeof value == 'boolean' || isObject(value);
 });
 
-ModelService.mapOperator(FunctionOperator, (qualifier:string, value:any) => {
+ModelService.mapOperator(FunctionOperator, (value:any) => {
     return isFunction(value);
 });
 
-ModelService.mapOperator(ModelOperator, (qualifier:string, value:any) => {
+ModelService.mapOperator(ModelOperator, (value:any) => {
     return value instanceof AbstractModel;
 });

@@ -1,21 +1,15 @@
 import {Operator} from "./Operator";
+import {isObject} from "../../util/object/Objects";
 
 export class ValueOperator extends Operator {
-    getWorkload():any {
-        let workload:any = this.getPrevious().getWorkload();
+    evaluate(value:Object):any {
+        if(!isObject(value)) return null;
 
-        if(workload[this.getQualifier()] !== undefined) {
-            return workload[this.getQualifier()];
-        }
-
-        return null;
+        return value[this.getQualifier()] || null;
     }
 
-    evaluate():any {
-        if(this.getNext()) {
-            return this.next();
-        }
-
-        return this.getWorkload();
+    alter(value:any):any {
+        // does not alter.
+        return value;
     }
 }

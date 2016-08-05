@@ -1,10 +1,14 @@
 import {ModelChangeEvent} from "./ModelChangeEvent";
 import {EventDispatcherContainer} from "../app/event/EventDispatcherContainer";
 import {Operator} from "./operator/Operator";
-import {RootOperator} from "./operator/RootOperator";
 import {prototype} from "../util/annotations/Class";
 import {extend} from "../util/object/Objects";
 import {ModelService} from "./ModelService";
+import {ModelOperator} from "./operator/ModelOperator";
+import {first} from "../util/array/Arrays";
+import {NoSuchOperatorException} from "./operator/NoSuchOperatorException";
+import {isFunction} from "../util/general/General";
+import {FunctionOperator} from "./operator/FunctionOperator";
 
 const ATTRIBUTE_DEFINITION_FIELD = "__attributes_definition__";
 const ID_ATTRIBUTE_FIELD = "__id_attribute__";
@@ -35,10 +39,10 @@ export abstract class AbstractModel {
     private _dispatcherContainer:EventDispatcherContainer<ModelChangeEvent> = new EventDispatcherContainer<ModelChangeEvent>();
 
     @prototype("id")
-    ID_ATTRIBUTE_FIELD;
+    __attributes_definition__;
 
     @prototype({})
-    ATTRIBUTE_DEFINITION_FIELD;
+    __id_attribute__;
 
     protected attributes:Object = {};
 
@@ -65,36 +69,39 @@ export abstract class AbstractModel {
 
         if (!partials.length) return null;
 
-        let root:Operator = new RootOperator();
+        let root:Operator = new ModelOperator();
+
+        root.setQualifier(first(partials));
+        root.eval(this);
+        
         let previous:Operator = root;
         let current:Operator = null;
 
-        root.setData(this.attributes);
-        root.setQualifier(partials[0]);
+        for (let i = 1; i < partials.length || isFunction(previous.getValue()); i++) {
+            let partial:string = partials[i] || null;
 
-        for (let i = 1; i < partials.length; i++) {
-            let partial:string = partials[i];
-
-            if (this.isOperator(partial)) {
+            if (partial && this.isOperator(partial)) {
                 // todo
             } else {
-                current = ModelService.getOperatorFor(partial, previous.getWorkload());
+                current = ModelService.getOperatorFor(previous.getValue());
             }
 
-            // fixme throw a custom exception here
-            if(!current) throw new Error();
+            if(!current) throw new NoSuchOperatorException("operator for " + previous.getValue() + " could not be found, qualifier = " + partial);
 
             current.setQualifier(partial);
             current.setPrevious(previous);
 
-            if (previous instanceof Operator) {
-                previous.setNext(current);
-            }
+            current.setQualifier(partial);
 
+            if(!current.consumes()) i--;
+
+            current.eval(previous.getValue());
+
+            previous.setNext(current);
             previous = current;
         }
 
-        return root.evaluate();
+        return root.retrieve();
     }
 
     private isOperator(partial:string) {

@@ -1,22 +1,16 @@
-import {Operator} from "./Operator";
+import {Operator, Consumes} from "./Operator";
 import {isFunction} from "../../util/general/General";
 
+@Consumes(false)
 export class FunctionOperator extends Operator {
-    getWorkload():any {
-        let workload:any = this.getPrevious().getWorkload();
+    evaluate(value:Function):any {
+        if(!isFunction(value)) return null;
 
-        if(workload && isFunction(workload)) {
-            return workload.call(workload);
-        }
-
-        return null;
+        return value.call(this.getPrevious().getContext());
     }
-    
-    evaluate():any {
-        if(this.getNext()) {
-            return this.next();
-        }
 
-        return this.getWorkload();
-    }    
+    alter(value:any):any {
+        // does not alter.
+        return value;
+    }
 }

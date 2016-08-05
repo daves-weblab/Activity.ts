@@ -1,15 +1,28 @@
+import {prototype} from "../../util/annotations/Class";
+import {OperatorNotEvaluatedException} from "./OperatorNotEvaluatedException";
+
+const CONSUMES_FIELD = "__consumes__";
+
+export function Consumes(consumes:boolean) {
+    return function(target:Function) {
+        target.prototype[CONSUMES_FIELD] = consumes;
+    }
+}
+
 export abstract class Operator {
-    private _data:any;
+    @prototype(true)
+    __consumes__;
+
     private _qualifier:string;
     private _previous:Operator;
     private _next:Operator;
 
-    setData(data:any) {
-        this._data = data;
-    }
-    
-    getData():any {
-        return this._data;
+    private _context:any;
+    private _evaluated:boolean;
+    private _value:any;
+
+    consumes():boolean {
+        return this[CONSUMES_FIELD];
     }
 
     getQualifier() {
@@ -28,14 +41,6 @@ export abstract class Operator {
         return this._previous;
     }
 
-    previous():any {
-        if(this._previous) {
-            return this._previous.evaluate();
-        }
-        
-        return null;
-    }
-
     setNext(operator:Operator) {
         this._next = operator;
     }
@@ -44,14 +49,32 @@ export abstract class Operator {
         return this._next;
     }
 
-    next():any {
-        if(this._next) {
-            return this._next.evaluate();
-        }
-
-        return null;
+    getValue():any {
+        return this._value;
     }
 
-    abstract getWorkload():any;
-    abstract evaluate():any;
+    getContext():any {
+        return this._context;
+    }
+
+    eval(value:any):any {
+        this._context = value;
+        this._value = this.evaluate(value);
+        this._evaluated = true;
+        
+        return this._value;
+    }
+
+    retrieve():any {
+        if(!this._evaluated) throw new OperatorNotEvaluatedException();
+
+        if(this.getNext()) {
+            return this.alter(this.getNext().retrieve());
+        }
+
+        return this.alter(this._value);
+    }
+
+    abstract evaluate(value:any):any;
+    abstract alter(value:any):any;
 }

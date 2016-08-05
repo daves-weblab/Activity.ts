@@ -1,17 +1,23 @@
 import {Operator} from "./Operator";
+import {AbstractModel} from "../AbstractModel";
 
 export class ModelOperator extends Operator {
-    getWorkload():any {
-        let workload:any = this.getPrevious().getWorkload();
+    evaluate(value:AbstractModel):any {
+        if(!(value instanceof AbstractModel)) return null;
 
-        return workload.get(this.getQualifier());
-    }
+        // check attribute
+        let val:any = value.getAttributes()[this.getQualifier()];
 
-    evaluate():any {
-        if(this.getNext()) {
-            return this.next();
+        // check proto and other availabilities
+        if(val === undefined) {
+            val = value[this.getQualifier()];
         }
 
-        return this.getWorkload();
+        return val || null;
+    }
+
+    alter(value:any):any {
+        // does not alter.
+        return value;
     }
 }

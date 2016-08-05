@@ -19,11 +19,14 @@ import {AbstractModel, Attributes} from "../src/model/AbstractModel";
 
 @Attributes({
     firstname: "",
-    lastname: "",
-    email: ""
+    lastname: ""
 })
 class Profile extends AbstractModel {
     getFirstname() {
+        return "I am a fake firstname :D";
+    }
+
+    getLastname() {
         return this.get('lastname');
     }
 }
@@ -33,20 +36,33 @@ class Profile extends AbstractModel {
     profile: Profile
 })
 class User extends AbstractModel {
-    getSomething() {
-        return 'something';
+    getProfile() {
+        return this.get('profile');
     }
 }
 
-let p = new Profile({
-    firstname: "David",
-    lastname: "Riedl",
+@Attributes({
+    email: "",
+    password: "",
+    user: User
+})
+class Member extends AbstractModel {
+}
+
+let m = new Member({
     email: "daves.weblab@gmail.com",
+    password: "hashed_pw",
+    user: new User({
+        age: 24,
+        profile: new Profile({
+            firstname: "David",
+            lastname: "Riedl"
+        })
+    })
 });
 
-let u = new User({
-    age: 24,
-    profile: p
-});
-
-console.log(u.get('profile.getFirstname'));
+console.log(m.get('email'));
+console.log(m.get('user.age'));
+console.log(m.get('user.profile.firstname'));
+console.log(m.get('user.profile.getFirstname'));
+console.log(m.get('user.getProfile.getFirstname'));
